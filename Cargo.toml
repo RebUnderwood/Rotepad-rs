@@ -1,0 +1,18 @@
+[package]
+name = "rotepad-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+directories = "6.0.0"
+regex = "1.12.3"
+rfd = "0.17.2"
+toml = "1.1.2"
+
+[dependencies.gtk4]
+package = "gtk4"
+version = "0.11.1"
+features = ["v4_12"]
+
+[build-dependencies]
+glib-build-tools = "0.22.0"

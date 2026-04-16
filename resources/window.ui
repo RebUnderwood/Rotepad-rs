@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+
+  <menu id='file-menu'>
+    <section>
+      <item>
+        <attribute name='label' translatable='yes'>_New</attribute>
+        <attribute name='action'>app.new</attribute>
+      </item>
+      <item>
+        <attribute name='label' translatable='yes'>New _Window</attribute>
+        <attribute name='action'>app.new_window</attribute>
+      </item>
+      <item>
+        <attribute name='label' translatable='yes'>_Open...</attribute>
+        <attribute name='action'>win.open</attribute>
+      </item>
+      <item>
+        <attribute name='label' translatable='yes'>Open in New Window...</attribute>
+        <attribute name='action'>app.open_new</attribute>
+      </item>
+      <submenu id='recent_files_menu'>
+          <attribute name='label' translatable='yes'>Open Recent</attribute>
+          <!-- <attribute name='submenu-action'>win.generate_recent_files_menu</attribute> -->
+      </submenu>
+      <item>
+        <attribute name='label' translatable='yes'>_Save</attribute>
+        <attribute name='action'>win.save</attribute>
+      </item>
+      <item>
+        <attribute name='label' translatable='yes'>Save As...</attribute>
+        <attribute name='action'>win.save_as</attribute>
+      </item>
+      <item>
+        <attribute name='label' translatable='yes'>_Export</attribute>
+        <attribute name='action'>app.export</attribute>
+      </item>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>_Quit</attribute>
+          <attribute name='action'>app.quit</attribute>
+        </item>
+      </section>
+    </section>
+  </menu>
+
+  <menu id='edit-menu'>
+    <section>
+      <item>
+        <attribute name='label' translatable='yes'>_Undo</attribute>
+        <attribute name='action'>app.undo</attribute>
+      </item>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>Cut</attribute>
+          <attribute name='action'>app.cut</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Copy</attribute>
+          <attribute name='action'>app.copy</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Paste</attribute>
+          <attribute name='action'>app.paste</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Delete</attribute>
+          <attribute name='action'>app.delete</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>Find...</attribute>
+          <attribute name='action'>app.find</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Find Next</attribute>
+          <attribute name='action'>app.find_next</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Find Previous</attribute>
+          <attribute name='action'>app.find_previous</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Replace...</attribute>
+          <attribute name='action'>app.replace</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>Select All</attribute>
+          <attribute name='action'>app.select_all</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Time/Date</attribute>
+          <attribute name='action'>app.insert_time_date</attribute>
+        </item>
+      </section>
+    </section>
+  </menu>
+
+  <menu id='settings-menu'>
+    <section>
+      <submenu>
+          <attribute name='label' translatable='yes'>Zoom</attribute>
+      </submenu>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>Autosave</attribute>
+          <attribute name='action'>app.autosave</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>Status Bar</attribute>
+          <attribute name='action'>app.show_statusbar</attribute>
+        </item>
+        <item>
+          <attribute name='label' translatable='yes'>Word Counter</attribute>
+          <attribute name='action'>app.show_wordcount</attribute>
+        </item>
+      </section>
+      <section>
+        <item>
+          <attribute name='label' translatable='yes'>Fullscreen</attribute>
+          <attribute name='action'>app.fullscreen</attribute>
+        </item>
+      </section>
+    </section>
+  </menu>
+
+  <template class="RotepadWindow" parent="GtkApplicationWindow">
+    <property name="title">Rotepad</property>
+    <property name="show-menubar">true</property>
+    <property name="width-request">500</property>
+    <property name="height-request">600</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">3</property>
+
+        <child>
+          <object class="GtkBox">
+            <property name="name">header-bar</property>
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <child>
+              <object class="GTKMenuButton" id="file_menu_button">
+                <property name="label">File</property>
+                <property name="always-show-arrow">False</property>
+                <property name="direction">none</property>
+                <property name="popover">
+                  <object class="GtkPopoverMenu">
+                    <property name="halign">start</property>
+                    <property name="menu-model">file-menu</property>
+                    <property name="has-arrow">false</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GTKMenuButton">
+                <property name="label">Edit</property>
+                <property name="always-show-arrow">False</property>
+                <property name="direction">none</property>
+                <property name="popover">
+                  <object class="GtkPopoverMenu">
+                    <property name="halign">start</property>
+                    <property name="menu-model">edit-menu</property>
+                    <property name="has-arrow">false</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GTKMenuButton">
+                <property name="label">Settings</property>
+                <property name="always-show-arrow">False</property>
+                <property name="direction">none</property>
+                <property name="popover">
+                  <object class="GtkPopoverMenu">
+                    <property name="halign">start</property>
+                    <property name="menu-model">settings-menu</property>
+                    <property name="has-arrow">false</property>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GTKScrolledWindow" id="entry">
+            <property name="hscrollbar-policy">never</property>
+            <property name="hscrollbar-policy">automatic</property>
+            <property name="vexpand">true</property>
+            <property name="hexpand">true</property>
+            <child>
+              <object class="GTKTextView" id="textarea">
+                <property name="monospace">true</property>
+                <property name="wrap-mode">word-char</property>
+                <property name="margin-start">6</property>
+                <property name="margin-end">6</property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+        <child>
+          <object class="GtkBox" id="status_bar">
+            <property name="name">footer-bar</property>
+            <property name="orientation">horizontal</property>
+            <property name="spacing">0</property>
+            <child>
+              <object class="GtkBox">
+                <property name="name">footer-bar</property>
+                <property name="orientation">horizontal</property>
+                <property name="hexpand">true</property>
+              </object>
+            </child>
+            <child>
+              <object class="GTKLabel" id="console_display">
+                <property name="name">console-display</property>
+                <property name="label"></property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <child>
+              <object class="GTKLabel" id="zoom_display">
+                <property name="label">100%</property>
+                <property name="halign">center</property>
+              </object>
+            </child>
+            <child>
+              <object class="GTKLabel" id="wordcount_display">
+                <property name="label">0 words</property>
+                <property name="halign">center</property>
+                <property name="margin-end">6</property>
+              </object>
+            </child>
+          </object>
+        </child>
+
+      </object>
+    </child>
+  </template>
+</interface>
