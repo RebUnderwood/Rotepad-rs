@@ -1,17 +1,19 @@
-
-
 mod window;
 
 use gtk4::prelude::*;
-use gtk4::{Application, gio, glib, gdk};
+use gtk4::{Application, gio, gdk, gio::ApplicationFlags};
 use window::Window;
 use std::time::Duration;
 use std::thread::sleep;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::sync::mpsc::channel;
+use std::env;
+use std::path::PathBuf;
 
-fn main() -> glib::ExitCode {
+static WINDOW_WRAPPER: Mutex<Option<WindowWrapper>> = Mutex::new(None);
+
+fn main()  {
     // Register and include resources
     gio::resources_register_include!("compiled.gresource")
         .expect("Failed to register resources.");
@@ -19,18 +21,41 @@ fn main() -> glib::ExitCode {
     // Create a new application
     let app = Application::builder()
         .application_id("org.gtk_rs.Rotepad")
+        .flags(ApplicationFlags::HANDLES_OPEN)
         .build();
 
-    // Connect to "activate" signal of `app`
     app.connect_startup(|_| load_css());
     app.connect_activate(build_ui);
+    app.connect_open(|app, files, _hint| {
+        app.activate(); 
+        let w_opt = WINDOW_WRAPPER.lock().unwrap();
+        if let Some(wrapper) = &*w_opt {
+            if let Some(path) = files[0].path() {
+                wrapper.open_file(path);
+            }
+        }
+    });
 
     app.set_accels_for_action("win.open", &["<Ctrl>O"]);
     app.set_accels_for_action("win.save", &["<Ctrl>S"]);
     app.set_accels_for_action("win.save_as", &["<Ctrl><Shift>S"]);
+    app.set_accels_for_action("win.new", &["<Ctrl>N"]);
+    app.set_accels_for_action("win.new-window", &["<Ctrl><Shift>N"]);
+    app.set_accels_for_action("win.open-in-new-window", &["<Ctrl><Shift>O"]);
+    app.set_accels_for_action("win.toggle-fullscreen", &["F11"]);
+
+    app.set_accels_for_action("win.undo", &["<Ctrl>Z"]);
+    app.set_accels_for_action("win.redo", &["<Ctrl>Y", "<Ctrl><Shift>Z"]);
+    app.set_accels_for_action("win.cut", &["<Ctrl>X"]);
+    app.set_accels_for_action("win.copy", &["<Ctrl>C"]);
+    app.set_accels_for_action("win.paste", &["<Ctrl>V"]);
+
+    app.set_accels_for_action("win.select-all", &["<Ctrl>A"]);
+
+    
 
     // Run the application
-    app.run()
+    app.run();
 }
 
 fn load_css() {
@@ -52,8 +77,12 @@ fn build_ui(app: &Application) {
     let (upd_tx, upd_rx) = channel();
     let (console_tx, console_rx) = channel();
     window.setup(upd_tx, console_tx);
+    
+    
     window.present();
     let wrapper = WindowWrapper::new(window);
+    let mut w_opt = WINDOW_WRAPPER.lock().unwrap();
+    *w_opt = Some(wrapper);
     thread::spawn(
         move || {
             let mut countdown = 0;
@@ -75,14 +104,20 @@ fn build_ui(app: &Application) {
                 if countdown > 0 {
                     countdown -= 1;
                     if countdown == 0 {
-                        wrapper.count_words();
-                        wrapper.autosave();
+                        let w_opt = WINDOW_WRAPPER.lock().unwrap();
+                        if let Some(wrapper) = &*w_opt {
+                            wrapper.count_words();
+                            wrapper.autosave();
+                        }
                     }
                 }
                 if console_countdown > 0 {
                     console_countdown -= 1;
                     if console_countdown == 0 {
-                        wrapper.fade_console();
+                        let w_opt = WINDOW_WRAPPER.lock().unwrap();
+                        if let Some(wrapper) = &*w_opt {
+                            wrapper.fade_console();
+                        }
                     }
                 }
             }
@@ -109,6 +144,9 @@ impl WindowWrapper {
     }
     pub fn fade_console(&self) {
         let _ = &self.window.lock().unwrap().fade_console();
+    }
+    pub fn open_file(&self, path: PathBuf) {
+        let _ = &self.window.lock().unwrap().open_file(path);
     }
 }
 

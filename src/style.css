@@ -10,6 +10,10 @@ textview {
 	font-family: "Noto Sans Mono", monospace;
 }
 
+window.fullscreen textview {
+	min-width: 1200px;
+}
+
 textview text {
 	background-color: rgba(0,0,0,0);
 }
@@ -22,17 +26,51 @@ box#header-bar {
 	border-bottom: 1px solid rgb(210, 210, 210);
 }
 
-box#header-bar menubutton button {
-	border: none;
-	padding: 2px 3px;
-	background-color: #00000000;
+box#header-bar menubar {
+	background-color: white;
 	color: black;
+}
+
+box#header-bar menubar item {
+	padding: 2px 3px;
+	background-color: white;
+	color: black;
+}
+
+box#header-bar menubar item:hover {
+	background-color: #dcdcdc;
+}
+
+box#header-bar menubar label {
 	font-family: "Open Sans", "Noto Sans", sans-serif;
 	font-size: 1.1rem;
+	color: black;
+}
+
+box#header-bar menubar popover contents {
+	background-color: #dcdcdc;
+	color: black;
+	border: 1px solid #d2d2d2;
+	border-radius: 0;
+	padding: 0;
+}
+
+box#header-bar menubar popover contents *:disabled {
+	color: #888888;
+}
+
+box#header-bar menubar popover contents accelerator {
+	color: #000000;
+}
+
+box#header-bar menubar popover contents modelbutton:hover {
+	background-color: #aaaaaa;
+	border: 1px solid #aaaaaa;
+	border-radius: 0;
 }
 
 box#footer-bar {
-	background: #dcdcdc;
+	background-color: #dcdcdc;
 	font-family: "Open Sans", "Noto Sans", sans-serif;
 	font-weight: 600;
 	font-size: 1rem;

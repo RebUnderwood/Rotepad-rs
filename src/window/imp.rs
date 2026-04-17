@@ -8,7 +8,6 @@ use gtk4::{
     TextView,
     Label,
     Box,
-    MenuButton,
     gio::Menu,
 };
 use std::cell::RefCell;
@@ -22,9 +21,10 @@ use crate::window::WindowData;
 #[template(resource = "/org/gtk_rs/Rotepad-rs/window.ui")]
 #[properties(wrapper_type = super::Window)]
 pub struct Window {
-    #[property(name = "content", get, set, type = String, member = content)]
     #[property(name = "wordcount", get, set, type = u32, member = wordcount)]
-    #[property(name = "path", get, set, type = Option<String>, member = path)]
+    #[property(name = "path", get, set,nullable, type = Option<String>, member = path)]
+    #[property(name = "contentunsaved", get, set, type = bool, member = contentunsaved)]
+    #[property(name = "autosavedisabled", get, set, type = bool, member = autosavedisabled)]
     pub data: Arc<Mutex<WindowData>>,
     #[template_child]
     pub textarea: TemplateChild<TextView>,
@@ -37,9 +37,11 @@ pub struct Window {
     #[template_child]
     pub console_display: TemplateChild<Label>,
     #[template_child]
-    pub file_menu_button: TemplateChild<MenuButton>,
-    #[template_child]
     pub recent_files_menu: TemplateChild<Menu>,
+    #[template_child]
+    pub left_margin: TemplateChild<Box>,
+    #[template_child]
+    pub right_margin: TemplateChild<Box>,
     pub upd_tx: RefCell<Sender<u16>>,
     pub console_tx: RefCell<Sender<u16>>,
 }
@@ -57,8 +59,9 @@ impl Default for Window {
             wordcount_display: Default::default(),
             zoom_display: Default::default(),
             console_display: Default::default(),
-            file_menu_button: Default::default(),
             recent_files_menu: Default::default(),
+            left_margin: Default::default(),
+            right_margin: Default::default(),
         }
     }
 }
