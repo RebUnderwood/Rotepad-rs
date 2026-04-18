@@ -11,7 +11,7 @@ use std::sync::mpsc::channel;
 use std::env;
 use std::path::PathBuf;
 
-static WINDOW_WRAPPER: Mutex<Option<WindowWrapper>> = Mutex::new(None);
+static WINDOW_WRAPPERS: Mutex<Vec<WindowWrapper>> = Mutex::new(vec![]);
 
 fn main()  {
     // Register and include resources
@@ -25,14 +25,13 @@ fn main()  {
         .build();
 
     app.connect_startup(|_| load_css());
-    app.connect_activate(build_ui);
+    app.connect_activate(build_ui_wrapper);
     app.connect_open(|app, files, _hint| {
-        app.activate(); 
-        let w_opt = WINDOW_WRAPPER.lock().unwrap();
-        if let Some(wrapper) = &*w_opt {
-            if let Some(path) = files[0].path() {
-                wrapper.open_file(path);
-            }
+        //app.activate(); 
+        let ind = build_ui(&app);
+         let w_opt = WINDOW_WRAPPERS.lock().unwrap();
+         if let Some(path) = files[0].path() {
+            w_opt[ind].open_file(path);
         }
     });
 
@@ -71,7 +70,11 @@ fn load_css() {
     );
 }
 
-fn build_ui(app: &Application) {
+fn build_ui_wrapper(app: &Application) -> () {
+    let _ = build_ui(app);
+}
+
+fn build_ui(app: &Application) -> usize {
     let window = Window::new(app);
     #[allow(unused_variables)]
     let (upd_tx, upd_rx) = channel();
@@ -81,14 +84,17 @@ fn build_ui(app: &Application) {
     
     window.present();
     let wrapper = WindowWrapper::new(window);
-    let mut w_opt = WINDOW_WRAPPER.lock().unwrap();
-    *w_opt = Some(wrapper);
+    let mut w_opt = WINDOW_WRAPPERS.lock().unwrap();
+    w_opt.push(wrapper);
+    let ind = w_opt.len() - 1;
+    let out = ind.clone();
     thread::spawn(
         move || {
             let mut countdown = 0;
             let mut console_countdown = 0;
             loop {
                 sleep(Duration::from_millis(50));
+
                 match upd_rx.try_recv() {
                     Ok(reset_val) => {
                         countdown = reset_val;
@@ -104,25 +110,25 @@ fn build_ui(app: &Application) {
                 if countdown > 0 {
                     countdown -= 1;
                     if countdown == 0 {
-                        let w_opt = WINDOW_WRAPPER.lock().unwrap();
-                        if let Some(wrapper) = &*w_opt {
-                            wrapper.count_words();
-                            wrapper.autosave();
-                        }
+                         let w_opt = WINDOW_WRAPPERS.lock().unwrap();
+                            w_opt[ind].count_words();
+                            w_opt[ind].autosave();
                     }
                 }
                 if console_countdown > 0 {
                     console_countdown -= 1;
                     if console_countdown == 0 {
-                        let w_opt = WINDOW_WRAPPER.lock().unwrap();
-                        if let Some(wrapper) = &*w_opt {
-                            wrapper.fade_console();
-                        }
+                         let w_opt = WINDOW_WRAPPERS.lock().unwrap();
+                        // if let Some(wrapper) = &*w_opt {
+                            w_opt[ind].fade_console();
+                        // }
                     }
                 }
             }
         },
     );
+
+    out
 }
 
 
